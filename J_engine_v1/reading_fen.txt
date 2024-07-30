@@ -1,0 +1,33 @@
+rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R
+correct
+
+rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB
+FEN: invalid character
+
+rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1Rrrr
+FEN: too many characters specified
+
+rnbqkbnr/pp1pp pp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R
+FEN: invalid character
+
+rnbqkbnr/pp1ppspp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R
+FEN: invalid character
+
+rnbqkbnr/pp1ppppp8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R
+FEN: '/' missing
+
+/nbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R
+FEN: invalid character
+
+//nbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R
+FEN: invalid character
+
+
+rnbqkbnr//pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R
+FEN: invalid character
+
+rnbqkbnr/ppp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R
+FEN: '/' missing
+
+rnbqkbnr/zpp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R
+FEN: invalid character
