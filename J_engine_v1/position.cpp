@@ -1,9 +1,15 @@
 #include "position.h"
 
+/*
+TODO
+Create another class that can display the board. 
+This class will contain the GeneratePositionDisplay and Display Position functions.
+In this class, create a data member containing the address in the board_position
+variable. Remember to deallocate this memory.
+*/
+
 Position::Position(std::string fen) {
 	ReadFen(fen);
-	UpdateWhiteOccupied();
-	UpdateBlackOccupied();
 }
 
 //note that the children_ set is not copied over
@@ -21,9 +27,6 @@ Position::Position(const Position& position) {
 	bq_ = position.bq_;
 	bk_ = position.bk_;
 
-	white_occupied_ = position.white_occupied_;
-	black_occupied_ = position.black_occupied_;
-
 	white_to_move_ = position.white_to_move_;
 
 	wq_castle_ = position.wq_castle_;
@@ -35,6 +38,14 @@ Position::Position(const Position& position) {
 
 	halfmoves_ = position.halfmoves_;
 	fullmoves_ = position.fullmoves_;
+
+	/*
+	I have purposely left out code to copy over the children_ set.
+	This is because I am using this copy constructor to create new children.
+	When a new child is created, I do not want the new
+	child to get the same children_ set as the parent.
+	
+	*/
 }
 
 /*
@@ -302,14 +313,6 @@ void Position::ReadNonSlash(int* squares_remaining, char token) {
 		}
 		(*squares_remaining)--;
 	}
-}
-
-void Position::UpdateWhiteOccupied() {
-	white_occupied_ = wp_ | wn_ | wb_ | wr_ | wq_ | wk_;
-}
-
-void Position::UpdateBlackOccupied() {
-	black_occupied_ = bp_ | bn_ | bb_ | br_ | bq_ | bk_;
 }
 
 

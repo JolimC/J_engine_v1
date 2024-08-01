@@ -26,10 +26,6 @@ private:
 	uint64_t bq_ = 0;
 	uint64_t bk_ = 0;
 
-	uint64_t white_occupied_ = 0;
-	uint64_t black_occupied_ = 0;
-	
-
 	bool white_to_move_ = true;
 
 	bool wq_castle_ = false;
@@ -54,10 +50,6 @@ private:
 	void ReadEPTarget(const std::string& fen, int* curr_idx);
 	void ReadHalfmove(const std::string& fen, int* curr_idx);
 	void ReadFullmove(const std::string& fen, int* curr_idx);
-
-	//MUST call these functions whenever any of the 12 piece bitboards are changed
-	void UpdateWhiteOccupied();
-	void UpdateBlackOccupied();
 
 
 	//private helper functions and variables for debugging purposes
