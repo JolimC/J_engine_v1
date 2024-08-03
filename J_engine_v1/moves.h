@@ -8,23 +8,42 @@ enum class Direction {
 	Diag, A_diag, File, Rank
 };
 
+enum class MyColor {
+	White, Black
+};
+
 class GeneratePositions {
 public:
 	GeneratePositions(Position* position);
+
+
+	/*
+	TO DEALLOCATE:
+	my_bitboards from the UpdateParentBitboards function
+	
+	*/
+	~GeneratePositions();
+	
+	//visibility is temporarily public for testing
 	
 private:
 	uint64_t UpdateWhiteOccupied();
 	uint64_t UpdateBlackOccupied();
+	uint64_t* UpdateParentBitboards(MyColor color);
 	void UpdateChildBitboards(Position* child);
-	uint64_t ComputeMyOccupied() const;
+	uint64_t ComputeMyOccupied(MyColor color) const;
 
-	uint64_t PawnAttacks(uint64_t curr_pawns) const;
-	uint64_t KnightAttacks(int knight_idx) const;
-	uint64_t BishopAttacks(int bishop_idx) const;
-	uint64_t RookAttacks(int rook_idx) const;
-	uint64_t QueenAttacks(int queen_idx) const;
-	uint64_t KingAttacks(bool white_to_move) const;
-	uint64_t AttackSquares() const;
+	uint64_t PawnAttacks(uint64_t curr_pawns, uint64_t my_occupied) const;
+	uint64_t KnightAttacks(int knight_idx, uint64_t my_occupied) const;
+	uint64_t BishopAttacks(int bishop_idx, uint64_t my_occupied) const;
+	uint64_t RookAttacks(int rook_idx, uint64_t my_occupied) const;
+	uint64_t QueenAttacks(int queen_idx, uint64_t my_occupied) const;
+	uint64_t KingAttacks(MyColor color) const;
+	uint64_t AttackSquares(MyColor color) const;
+
+	uint64_t GeneratePieceAttacks(
+		std::function<uint64_t(int, uint64_t)> PieceAttacks,
+		uint64_t my_occupied, uint64_t piece_bitboard) const;
 
 	void PawnGen();
 	void DiagCapture();
@@ -46,10 +65,19 @@ private:
 	const uint64_t white_occupied_;
 	const uint64_t black_occupied_;
 	const uint64_t occupied_;
-	const uint64_t my_occupied_;
+
+	//refers to the PARENT bitboards
+	const uint64_t* const parent_white_bb_;
+	const uint64_t* const parent_black_bb_;
+	const std::map<MyColor, const uint64_t* const> my_bitboards_ = {
+		{MyColor::White, parent_white_bb_},
+		{MyColor::Black, parent_black_bb_}
+	};
 
 	/*refers to the bitboards of the CHILD.These values
 	* are different for each new position.
+	* 
+	* Note these are arrays of pointers to bitboards
 	*/ 
 	uint64_t* white_bitboards_[6];
 	uint64_t* black_bitboards_[6];
