@@ -10,8 +10,9 @@ public:
 
 	friend class GeneratePositions;
 
-	//public helper functions and variables for debugging purposes
+	//public helper functions, variables, etc for debugging purposes
 	void DisplayPosition() const;
+	friend class Testing;
 private:
 	uint64_t wp_ = 0;
 	uint64_t wn_ = 0;

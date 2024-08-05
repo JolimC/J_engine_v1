@@ -130,12 +130,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="moves.cpp" />
     <ClCompile Include="position.cpp" />
+    <ClCompile Include="testing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="error_handling.h" />
     <ClInclude Include="libraries.h" />
     <ClInclude Include="moves.h" />
     <ClInclude Include="position.h" />
+    <ClInclude Include="testing.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="reading_fen.txt" />

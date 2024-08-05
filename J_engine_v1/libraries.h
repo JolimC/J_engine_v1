@@ -14,5 +14,6 @@
 #include <map>
 #include <intrin.h>
 #include <functional>
+#include <cassert>
 
 #include <stdexcept>

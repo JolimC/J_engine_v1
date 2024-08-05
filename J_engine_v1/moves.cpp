@@ -14,7 +14,10 @@ GeneratePositions::GeneratePositions(Position* const position): position_(positi
 	*/
 }
 
-GeneratePositions::~GeneratePositions() {}
+GeneratePositions::~GeneratePositions() {
+	delete[] parent_white_bb_;
+	delete[] parent_black_bb_;
+}
 
 uint64_t GeneratePositions::UpdateWhiteOccupied() {
 	return position_->wp_ | position_->wn_ | position_->wb_ | position_->wr_ | position_->wq_ | position_->wk_;
@@ -71,19 +74,23 @@ void GeneratePositions::UpdateChildBitboards(Position* child) {
 
 // "opponent" refers to the opponent of the person that is taking the turn 
 // in position_
+/*
+IMPORTANT NOTE : purposely left out "& opponent_occupied" so that PawnAttacks can be used to find 
+positions in check. When adding pawn moves to children, I MUST "& opponent_occupied"
+*/
 uint64_t GeneratePositions::PawnAttacks(uint64_t curr_pawns, uint64_t my_occupied) const {
-	uint64_t opponent_occupied = white_occupied_;
+	/*uint64_t opponent_occupied = white_occupied_;
 	if (my_occupied == white_occupied_) {
 		opponent_occupied = black_occupied_;
-	}
+	}*/
+	// delete above code after coding the addition of pawn moves to children
 
-	uint64_t left_captures = curr_pawns << 7 & ~H_FILE_ & opponent_occupied;
-	uint64_t right_captures = curr_pawns << 9 & ~A_FILE_ & opponent_occupied;
+	uint64_t left_captures = curr_pawns << 7 & ~H_FILE_;
+	uint64_t right_captures = curr_pawns << 9 & ~A_FILE_;
 
-	return left_captures | right_captures;
+	return (left_captures | right_captures) & ~my_occupied;
 }
 
-//TODO: update Attacks functions to accept turn or my_occupied as parameter
 
 //"my" is in reference to the person taking the turn in position_
 uint64_t GeneratePositions::KnightAttacks(int knight_idx, uint64_t my_occupied) const {
@@ -95,7 +102,7 @@ uint64_t GeneratePositions::KnightAttacks(int knight_idx, uint64_t my_occupied) 
 		knight_attacks = KNIGHT_SPAN_ >> 18 - knight_idx;
 	}
 
-	if (knight_attacks % 8 > 3) {
+	if (knight_idx % 8 > 3) {
 		knight_attacks &= ~AB_FILES_;
 	}
 	else {

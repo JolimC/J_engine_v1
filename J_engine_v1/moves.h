@@ -19,19 +19,20 @@ public:
 
 	/*
 	TO DEALLOCATE:
-	my_bitboards from the UpdateParentBitboards function
-	
+		
 	*/
 	~GeneratePositions();
 	
-	//visibility is temporarily public for testing
-	
-private:
+	//code for debugging purposes:
+	friend class Testing;
+
+//private:
 	uint64_t UpdateWhiteOccupied();
 	uint64_t UpdateBlackOccupied();
 	uint64_t* UpdateParentBitboards(MyColor color);
 	void UpdateChildBitboards(Position* child);
 	uint64_t ComputeMyOccupied(MyColor color) const;
+
 
 	uint64_t PawnAttacks(uint64_t curr_pawns, uint64_t my_occupied) const;
 	uint64_t KnightAttacks(int knight_idx, uint64_t my_occupied) const;
@@ -40,6 +41,7 @@ private:
 	uint64_t QueenAttacks(int queen_idx, uint64_t my_occupied) const;
 	uint64_t KingAttacks(MyColor color) const;
 	uint64_t AttackSquares(MyColor color) const;
+	
 
 	uint64_t GeneratePieceAttacks(
 		std::function<uint64_t(int, uint64_t)> PieceAttacks,
