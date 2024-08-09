@@ -2,7 +2,7 @@
 
 /*
 TODO
-Create another class that can display the board. 
+Create another class that can display the board.
 This class will contain the GeneratePositionDisplay and Display Position functions.
 In this class, create a data member containing the address in the board_position
 variable. Remember to deallocate this memory.
@@ -44,7 +44,7 @@ Position::Position(const Position& position) {
 	This is because I am using this copy constructor to create new children.
 	When a new child is created, I do not want the new
 	child to get the same children_ set as the parent.
-	
+
 	*/
 }
 
@@ -56,7 +56,7 @@ curr_idx is the index of a ' ' character
 Notes:
 IncrementCurrIdx() is used to both increment curr_idx and error check string size
 curr_idx is a pointer to an int that is passed around several functions. It is incremented
-in ReadFen, ReadCastlingRights, and other similar functions that deal with reading the 
+in ReadFen, ReadCastlingRights, and other similar functions that deal with reading the
 FEN.
 
 */
@@ -99,7 +99,7 @@ void Position::ReadFen(std::string fen) {
 
 	IncrementCurrIdx(fen, curr_idx);
 	ReadHalfmove(fen, curr_idx);
-	
+
 	ReadSpace(fen.at(*curr_idx), "FEN: invalid character following halfmove information");
 
 	IncrementCurrIdx(fen, curr_idx);
@@ -112,7 +112,7 @@ void Position::ReadFen(std::string fen) {
 	delete curr_idx;
 }
 
-void Position::IncrementCurrIdx(const std::string &fen, int* curr_idx) const {
+void Position::IncrementCurrIdx(const std::string& fen, int* curr_idx) const {
 	if (++(*curr_idx) >= fen.size()) {
 		Error::error("incomplete FEN string");
 	}
@@ -124,7 +124,7 @@ void Position::ReadSpace(char curr_char, std::string error_info) const {
 	}
 }
 
-void Position::ReadCastlingRights(const std::string &fen, int* curr_idx) {
+void Position::ReadCastlingRights(const std::string& fen, int* curr_idx) {
 	std::set<char> castle_options({ 'K','Q','k','q' });
 	while (fen.at(*curr_idx) != ' ') {
 		switch (fen.at(*curr_idx)) {
@@ -183,12 +183,12 @@ void Position::ReadEPTarget(const std::string& fen, int* curr_idx) {
 		en_passant_sq_ = "null";
 	}
 	else {
-		std::set<char> allowable_files({'a','b','c','d','e','f','g','h'});
+		std::set<char> allowable_files({ 'a','b','c','d','e','f','g','h' });
 		if (!allowable_files.count(fen.at(*curr_idx))) {
 			Error::error("FEN: invalid file specified regarding target en passant square");
 		}
 		en_passant_sq_ = fen.at(*curr_idx);
-		
+
 		IncrementCurrIdx(fen, curr_idx);
 		switch (fen.at(*curr_idx)) {
 		case '3':
@@ -211,7 +211,7 @@ void Position::ReadHalfmove(const std::string& fen, int* curr_idx) {
 		IncrementCurrIdx(fen, curr_idx);
 	} while (fen.at(*curr_idx) != ' ');		// note that the while loop exits when curr_idx refers to a ' ' character
 
-	halfmoves_ = std::stoi(move_count);	 
+	halfmoves_ = std::stoi(move_count);
 }
 
 void Position::ReadFullmove(const std::string& fen, int* curr_idx) {
@@ -252,7 +252,7 @@ int Position::SetPosition(std::string fen) {
 			else {
 				Error::error("FEN: '/' missing");
 			}
-		} 
+		}
 		else {
 			ReadNonSlash(squares_remaining, token);
 		}
@@ -320,10 +320,10 @@ void Position::ReadNonSlash(int* squares_remaining, char token) {
 //this layout makes it easier to cout the board
 char* Position::GeneratePositionDisplay() const {
 	const int bitboards_size = 12;
-	uint64_t bitboards[] = {wp_, wn_, wb_, wr_, wq_, wk_,bp_, bn_, bb_, br_, bq_, bk_};
+	uint64_t bitboards[] = { wp_, wn_, wb_, wr_, wq_, wk_,bp_, bn_, bb_, br_, bq_, bk_ };
 	char* board_position = new char[64];
 	char bp_idx = 0;
-	for (int k = 56; k >= 0; k -= 8 ) {
+	for (int k = 56; k >= 0; k -= 8) {
 		for (int file = 0; file < 8; file++) {
 			bool piece_found = false;
 			for (int bb_idx = 0; bb_idx < bitboards_size; bb_idx++) {

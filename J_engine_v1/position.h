@@ -10,8 +10,9 @@ public:
 
 	friend class GeneratePositions;
 
-	//public helper functions and variables for debugging purposes
+	//public helper functions, variables, etc for debugging purposes
 	void DisplayPosition() const;
+	friend class Testing;
 private:
 	uint64_t wp_ = 0;
 	uint64_t wn_ = 0;
@@ -40,13 +41,13 @@ private:
 	int fullmoves_ = 1;
 
 	std::set<Position*> children_;
-	
+
 	void ReadFen(std::string fen);
 	int SetPosition(std::string fen);
 	void ReadNonSlash(int* squares_remaining, char token);
 	void ReadSpace(char curr_char, std::string error_info) const;
-	void IncrementCurrIdx(const std::string &fen, int* curr_idx) const;
-	void ReadCastlingRights(const std::string &fen, int* curr_idx);
+	void IncrementCurrIdx(const std::string& fen, int* curr_idx) const;
+	void ReadCastlingRights(const std::string& fen, int* curr_idx);
 	void ReadEPTarget(const std::string& fen, int* curr_idx);
 	void ReadHalfmove(const std::string& fen, int* curr_idx);
 	void ReadFullmove(const std::string& fen, int* curr_idx);
@@ -54,18 +55,18 @@ private:
 
 	//private helper functions and variables for debugging purposes
 	char* GeneratePositionDisplay() const;  // deletion of board_position never specified
-	const std::map<int, char>bb_to_piece_map_ = 
-		{{0, 'P'}, 
-		{1, 'N'}, 
-		{2, 'B'},
-		{3, 'R'},
-		{4, 'Q'}, 
-		{5, 'K'}, 
-		{6, 'p'}, 
-		{7, 'n'}, 
-		{8, 'b'},
-		{9, 'r'},
-		{10, 'q'},
-		{11, 'k'},
-		};
+	const std::map<int, char>bb_to_piece_map_ =
+	{ {0, 'P'},
+	{1, 'N'},
+	{2, 'B'},
+	{3, 'R'},
+	{4, 'Q'},
+	{5, 'K'},
+	{6, 'p'},
+	{7, 'n'},
+	{8, 'b'},
+	{9, 'r'},
+	{10, 'q'},
+	{11, 'k'},
+	};
 };

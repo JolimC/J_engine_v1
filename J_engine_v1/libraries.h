@@ -12,5 +12,8 @@
 #include <sstream>
 #include <ctype.h> 
 #include <map>
+#include <intrin.h>
+#include <functional>
+#include <cassert>
 
 #include <stdexcept>
