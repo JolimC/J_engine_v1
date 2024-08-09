@@ -33,7 +33,7 @@ void Testing::TestCases() {
 	Position* p2 = new Position(fen2);
 	GeneratePositions gp2(p2);
 	const uint64_t C_WP_ATTACKS_2 = 0x1400FB0000ULL;
-	assert(MirrorBB(C_WP_ATTACKS_2) == gp2.PawnAttacks(p2->wp_,gp2.parent_white_info_));
+	assert(MirrorBB(C_WP_ATTACKS_2) == gp2.PawnAttacks(p2->wp_, gp2.parent_white_info_));
 	assert(MirrorBB(0xA00000ULL) == gp2.KnightAttacks(1, gp2.parent_white_info_));
 	assert(MirrorBB(0xA11000002ULL) == gp2.KnightAttacks(21, gp2.parent_white_info_));
 	assert(MirrorBB(0ULL) == gp2.BishopAttacks(2, gp2.parent_white_info_));
@@ -43,7 +43,7 @@ void Testing::TestCases() {
 	assert(MirrorBB(0x800ULL) == gp2.QueenAttacks(3, gp2.parent_white_info_));
 	assert(MirrorBB(0x800ULL) == gp2.KingAttacks(gp2.parent_white_info_));
 	assert(MirrorBB(0x805E31FB0802ULL) == gp2.AttackSquares(gp2.parent_white_info_));
-	
+
 	std::string fen3 = "2r1r3/pp1bqppk/2p1p2p/3p1n2/3P1P2/2N1P3/PPP3PP/R1BQKB1R w KQ - 0 1";
 	Position* p3 = new Position(fen3);
 	GeneratePositions gp3(p3);
@@ -70,9 +70,9 @@ void Testing::TestCases() {
 	GeneratePositions gp5(p5);
 	const uint64_t C_WP_ATTACKS_5 = 0ULL;
 	assert(MirrorBB(C_WP_ATTACKS_5) == gp5.PawnAttacks(p5->wp_, gp5.parent_white_info_));
-	
 
-	
+
+
 
 
 	std::cout << std::endl << "assertions passed" << std::endl;

@@ -1,13 +1,13 @@
 #include "moves.h"
 
 
-GeneratePositions::GeneratePositions(Position* const position): position_(position), 
-	white_to_move_(position->white_to_move_)
+GeneratePositions::GeneratePositions(Position* const position) : position_(position),
+white_to_move_(position->white_to_move_)
 {
 	InitializePositionInfo(PositionType::Parent);
 	InitializePositionInfo(PositionType::Child);
 	/*
-	To do:
+	TODO:
 	populate the children_ set of "position" with generated legal moves
 
 	*/
@@ -69,7 +69,7 @@ void GeneratePositions::ResetChildPositionInfo() const {
 // "opponent" refers to the opponent of the person that is taking the turn 
 // in position_
 /*
-IMPORTANT NOTE : purposely left out "& opponent_occupied" so that PawnAttacks can be used to find 
+IMPORTANT NOTE : purposely left out "& opponent_occupied" so that PawnAttacks can be used to find
 positions in check. When adding pawn moves to children, I MUST "& opponent_occupied"
 */
 uint64_t GeneratePositions::PawnAttacks(uint64_t curr_pawns, PositionInfo* pos_info) const {
@@ -112,10 +112,10 @@ uint64_t GeneratePositions::BishopAttacks(int bishop_idx, PositionInfo* pos_info
 	uint64_t binary_s = 1ULL << bishop_idx;
 	uint64_t diagonal = (((occupied & Mask(Direction::Diag, s))
 		- (2 * binary_s)) ^ R(R(occupied & Mask(Direction::Diag, s))
-		- (2 * R(binary_s)))) & Mask(Direction::Diag, s);
+			- (2 * R(binary_s)))) & Mask(Direction::Diag, s);
 	uint64_t anti_diagonal = (((occupied & Mask(Direction::A_diag, s))
 		- (2 * binary_s)) ^ R(R(occupied & Mask(Direction::A_diag, s))
-		- (2 * R(binary_s)))) & Mask(Direction::A_diag, s);
+			- (2 * R(binary_s)))) & Mask(Direction::A_diag, s);
 
 	return (diagonal | anti_diagonal) & ~(pos_info->my_occupied_);
 }
@@ -197,7 +197,7 @@ uint64_t GeneratePositions::GeneratePieceAttacks(
 
 //TODO
 void GeneratePositions::PawnGen() {
-	
+
 }
 
 //TODO
@@ -213,15 +213,39 @@ void GeneratePositions::DiagCapture() {
 			_BitScanForward64(&curr_bit_idx, left_captures); //finds the least significant non-zero bit
 			uint64_t single_pawn_bitboard = 1ULL << curr_bit_idx;
 			//BEFORE CODING BELOW, I must check for pins
-			new_position->wp_ |= single_pawn_bitboard;		
+			new_position->wp_ |= single_pawn_bitboard;
 			uint64_t original_pawn_position = 1ULL << (curr_bit_idx - 7);
 			//perform bitwise operation on all black bitboards?
 			//if i cannot find a way, simply subtrract original_pawn_position from black bitboards a piece to be captured
 
 
+		}
+
 	}*/
 }
 
+uint64_t GeneratePositions::R(uint64_t original_bitboard) const {
+	uint64_t result = 0;
+	for (int idx = 0; idx < 64; idx++) {
+		result = (result << 1) | (original_bitboard & 1);
+		original_bitboard >>= 1;
 	}
+	return result;
 }
 
+uint64_t GeneratePositions::Mask(Direction direction, int piece_idx) const {
+	switch (direction)
+	{
+	case Direction::Diag:
+		return DIAGONALS_[(piece_idx / 8) + 7 - (piece_idx % 8)];
+	case Direction::A_diag:
+		return ANTI_DIAGONALS_[(piece_idx / 8) + (piece_idx % 8)];
+	case Direction::File:
+		return FILES_[piece_idx % 8];
+	case Direction::Rank:
+		return RANKS_[piece_idx / 8];
+	default:
+		Error::error("unspecified mask");
+		break;
+	}
+}
