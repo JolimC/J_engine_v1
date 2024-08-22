@@ -2,11 +2,14 @@
 
 #include "libraries.h"
 #include "error_handling.h"
+#include "utility.h"
 
 class Position {
 public:
 	Position(std::string fen);
 	Position(const Position& position);
+	Position(PositionInfo* white_info, 
+		PositionInfo* black_info, const Position& position);
 
 	friend class GeneratePositions;
 

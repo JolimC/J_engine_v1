@@ -3,21 +3,8 @@
 #include "libraries.h"
 #include "position.h"
 #include "error_handling.h"
+#include "utility.h"
 
-enum class Direction {
-	Diag, A_diag, File, Rank
-};
-
-enum class PositionType {
-	Parent, Child
-};
-
-
-struct PositionInfo {
-	uint64_t my_bitboards_[6];
-	uint64_t my_occupied_ = 0;
-	uint64_t all_occupied_ = 0;
-};
 
 class GeneratePositions {
 public:
@@ -35,7 +22,7 @@ public:
 
 	//private:
 
-		//called to initialize the values of the parent_info_ and child_info_ maps
+	//called to initialize the values of the parent_info_ and child_info_ maps
 	void InitializePositionInfo(PositionType type) const;
 	void ResetChildPositionInfo() const;
 	void UpdateChildOccupied() const;		//TODO
@@ -52,6 +39,13 @@ public:
 		std::function<uint64_t(int, PositionInfo* pos_info)> PieceAttacks,
 		PositionInfo* pos_info, uint64_t piece_bitboard) const;
 
+	//called by PawnGen(), BishopGen(), RookGen(), QueenGen()
+	//NK denotes that this function isn't used for king moves
+	void GenerateChildNK(int piece_type, 
+		std::function<uint64_t(int, PositionInfo* pos_info)> PieceAttacks);
+
+	void UpdateTurnInfo(int piece_type, 
+		unsigned long curr_piece_idx, Position* new_child);
 
 	void PawnGen();
 	void DiagCapture();
@@ -81,7 +75,7 @@ public:
 	//note that the values pointed to should not be changed after initializing
 	PositionInfo* const parent_white_info_ = new PositionInfo;
 	PositionInfo* const parent_black_info_ = new PositionInfo;
-	const std::map<bool, const PositionInfo* const> parent_info_ = {
+	const std::map<bool, PositionInfo* const> parent_info_ = {
 		{true, parent_white_info_},
 		{false, parent_black_info_}
 	};

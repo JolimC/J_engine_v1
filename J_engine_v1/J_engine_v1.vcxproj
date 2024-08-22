@@ -138,6 +138,7 @@
     <ClInclude Include="moves.h" />
     <ClInclude Include="position.h" />
     <ClInclude Include="testing.h" />
+    <ClInclude Include="utility.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="reading_fen.txt" />

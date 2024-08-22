@@ -48,6 +48,37 @@ Position::Position(const Position& position) {
 	*/
 }
 
+Position::Position(PositionInfo* white_info,
+	PositionInfo* black_info, const Position& position) {
+
+	wp_ = (white_info->my_bitboards_)[0];
+	wn_ = (white_info->my_bitboards_)[1];
+	wb_ = (white_info->my_bitboards_)[2];
+	wr_ = (white_info->my_bitboards_)[3];
+	wq_ = (white_info->my_bitboards_)[4];
+	wk_ = (white_info->my_bitboards_)[5];
+	bp_ = (black_info->my_bitboards_)[0];
+	bn_ = (black_info->my_bitboards_)[1];
+	bb_ = (black_info->my_bitboards_)[2];
+	br_ = (black_info->my_bitboards_)[3];
+	bq_ = (black_info->my_bitboards_)[4];
+	bk_ = (black_info->my_bitboards_)[5];
+
+	white_to_move_ = position.white_to_move_;
+
+	wq_castle_ = position.wq_castle_;
+	wk_castle_ = position.wk_castle_;
+	bq_castle_ = position.bq_castle_;
+	bk_castle_ = position.bk_castle_;
+
+	en_passant_sq_ = position.en_passant_sq_;
+
+	halfmoves_ = position.halfmoves_;
+	fullmoves_ = position.fullmoves_;
+}
+
+
+
 /*
 Preconditions:
 curr_idx is the index of a ' ' character
