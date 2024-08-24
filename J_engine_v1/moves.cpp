@@ -11,6 +11,11 @@ white_to_move_(position->white_to_move_)
 	populate the children_ set of "position" with generated legal moves
 
 	*/
+	PawnGen();
+	GenerateChildNK(1, [this](int idx, PositionInfo* pos_info)
+		{ return this->KnightAttacks(idx, pos_info); });
+
+	//add bishop, rook, etc
 }
 
 GeneratePositions::~GeneratePositions() {
@@ -49,6 +54,11 @@ void GeneratePositions::InitializePositionInfo(PositionType type) const {
 	(black_info->my_bitboards_)[4] = position_->bq_;
 	(black_info->my_bitboards_)[5] = position_->bk_;
 
+	black_info->im_white = false;
+	UpdateOccupied(white_info, black_info);
+}
+
+void GeneratePositions::UpdateOccupied(PositionInfo* white_info, PositionInfo* black_info) const {
 	for (int idx = 0; idx < 6; idx++) {
 		white_info->my_occupied_ |= (white_info->my_bitboards_)[idx];
 	}
@@ -71,13 +81,17 @@ void GeneratePositions::ResetChildPositionInfo() const {
 /*
 IMPORTANT NOTE : purposely left out "& opponent_occupied" so that PawnAttacks can be used to find
 positions in check. When adding pawn moves to children, I MUST "& opponent_occupied"
+
+TODO: make sure the pawn capture works for black
 */
-uint64_t GeneratePositions::PawnAttacks(uint64_t curr_pawns, PositionInfo* pos_info) const {
+uint64_t GeneratePositions::PawnAttacks(int pawn_idx, PositionInfo* pos_info) const {
 	/*uint64_t opponent_occupied = white_occupied_;
 	if (my_occupied == white_occupied_) {
 		opponent_occupied = black_occupied_;
 	}*/
 	// delete above code after coding the addition of pawn moves to children
+
+	uint64_t curr_pawns = 1ULL << pawn_idx;
 
 	uint64_t left_captures = curr_pawns << 7 & ~H_FILE_;
 	uint64_t right_captures = curr_pawns << 9 & ~A_FILE_;
@@ -167,7 +181,9 @@ Note: when generating moves, &~(pos_info->my_occupied_) or a variant of that mus
 */
 uint64_t GeneratePositions::AttackSquares(PositionInfo* pos_info) const {
 	uint64_t my_occupied = pos_info->my_occupied_;
-	uint64_t all_pawn_attacks = PawnAttacks((pos_info->my_bitboards_)[0], pos_info);
+	uint64_t all_pawn_attacks = GeneratePieceAttacks(
+		[this](int idx, PositionInfo* pos_info) { return this->PawnAttacks(idx, pos_info); },
+		pos_info, (pos_info->my_bitboards_)[0]);
 	uint64_t all_knight_attacks = GeneratePieceAttacks(
 		[this](int idx, PositionInfo* pos_info) { return this->KnightAttacks(idx, pos_info); },
 		pos_info, (pos_info->my_bitboards_)[1]);
@@ -212,7 +228,7 @@ void GeneratePositions::GenerateChildNK(int piece_type,
 	uint64_t movements_bb = 0;
 	while (original_locations_bb != 0) {
 		_BitScanForward64(&curr_piece_idx, original_locations_bb);
-		movements_bb = PieceAttacks(curr_piece_idx, parent_info) & ~(parent_info->my_occupied_);
+		movements_bb = PieceAttacks(curr_piece_idx, parent_info) & ~(parent_info->my_occupied_);	//~(parent_info->my_occupied_) ensures that the pieces aren't attacking their own color
 
 		unsigned long curr_move_idx;
 		while (movements_bb != 0) {
@@ -223,14 +239,17 @@ void GeneratePositions::GenerateChildNK(int piece_type,
 			for (int i = 0; i < 6; i++) {
 				(op_child_info->my_bitboards_)[i] &= ~(1ULL << curr_move_idx);		//deletes any opponent pieces from the new location
 			}
+
+			PositionInfo* white_info = child_info;
+			PositionInfo* black_info = op_child_info;
+			if (!white_to_move_) {
+				PositionInfo* white_info = op_child_info;
+				PositionInfo* black_info = child_info;
+			}
+			UpdateOccupied(white_info, black_info);	//I doubt it is necessary to update occupied. delete this line if this is unecessary in PERFT
+
 			uint64_t op_attacks = AttackSquares(op_child_info);
 			if (op_attacks != (op_attacks | (child_info->my_bitboards_)[5])) {		//I believe this line also takes care of the case where the position starts in a check
-				PositionInfo* white_info = child_info;
-				PositionInfo* black_info = op_child_info;
-				if (!white_to_move_) {
-					PositionInfo* white_info = op_child_info;
-					PositionInfo* black_info = child_info;					
-				}
 				Position* new_child = new Position(white_info, black_info, *position_);
 				(position_->children_).insert(new_child);
 				UpdateTurnInfo(piece_type, curr_piece_idx, new_child);
@@ -250,36 +269,22 @@ void GeneratePositions::UpdateTurnInfo(int piece_type,
 
 }
 
+uint64_t GeneratePositions::PawnDiagMoves(int pawn_idx, PositionInfo* pos_info) const {
+	uint64_t op_occupied = pos_info->all_occupied_ & ~(pos_info->my_occupied_);
+	return PawnAttacks(pawn_idx, pos_info) & op_occupied;
+}
+
+//TODO
+uint64_t GeneratePositions::PawnForwardMoves(int pawn_idx, PositionInfo* pos_info) const {
+	
+}
+
 //TODO
 void GeneratePositions::PawnGen() {
-
+	GenerateChildNK(0, [this](int idx, PositionInfo* pos_info)
+		{ return this->PawnDiagMoves(idx, pos_info); });
 }
 
-//TODO
-//recall that i might have to take out ~(pos_info->my_occupied_) in the attack functions to account
-//for gaurded pieces
-void GeneratePositions::DiagCapture() {
-	/*
-	if (position_->white_to_move_) {
-		uint64_t left_captures = (position_->wp_) << 7 & ~H_FILE_ & black_occupied_;
-		while (left_captures != 0) {
-			Position* new_position = new Position(*position_);
-			UpdateChildBitboards(new_position);
-
-			unsigned long curr_bit_idx;
-			_BitScanForward64(&curr_bit_idx, left_captures); //finds the least significant non-zero bit
-			uint64_t single_pawn_bitboard = 1ULL << curr_bit_idx;
-			//BEFORE CODING BELOW, I must check for pins
-			new_position->wp_ |= single_pawn_bitboard;
-			uint64_t original_pawn_position = 1ULL << (curr_bit_idx - 7);
-			//perform bitwise operation on all black bitboards?
-			//if i cannot find a way, simply subtrract original_pawn_position from black bitboards a piece to be captured
-
-
-		}
-
-	}*/
-}
 
 uint64_t GeneratePositions::R(uint64_t original_bitboard) const {
 	uint64_t result = 0;

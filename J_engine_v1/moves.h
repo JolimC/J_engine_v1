@@ -10,7 +10,6 @@ class GeneratePositions {
 public:
 	GeneratePositions(Position* position);
 
-
 	/*
 	TO DEALLOCATE:
 	PositionInfo objects created for parent_info_ and child_info_
@@ -25,9 +24,9 @@ public:
 	//called to initialize the values of the parent_info_ and child_info_ maps
 	void InitializePositionInfo(PositionType type) const;
 	void ResetChildPositionInfo() const;
-	void UpdateChildOccupied() const;		//TODO
+	void UpdateOccupied(PositionInfo* white_info, PositionInfo* black_info) const;
 
-	uint64_t PawnAttacks(uint64_t curr_pawns, PositionInfo* pos_info) const;
+	uint64_t PawnAttacks(int pawn_idx, PositionInfo* pos_info) const;
 	uint64_t KnightAttacks(int knight_idx, PositionInfo* pos_info) const;
 	uint64_t BishopAttacks(int bishop_idx, PositionInfo* pos_info) const;
 	uint64_t RookAttacks(int rook_idx, PositionInfo* pos_info) const;
@@ -39,16 +38,19 @@ public:
 		std::function<uint64_t(int, PositionInfo* pos_info)> PieceAttacks,
 		PositionInfo* pos_info, uint64_t piece_bitboard) const;
 
+	
+
 	//called by PawnGen(), BishopGen(), RookGen(), QueenGen()
-	//NK denotes that this function isn't used for king moves
+	//NK denotes that this function is NOT used for king moves
 	void GenerateChildNK(int piece_type, 
 		std::function<uint64_t(int, PositionInfo* pos_info)> PieceAttacks);
 
 	void UpdateTurnInfo(int piece_type, 
 		unsigned long curr_piece_idx, Position* new_child);
 
+	uint64_t PawnDiagMoves(int pawn_idx, PositionInfo* pos_info) const;
+	uint64_t PawnForwardMoves(int pawn_idx, PositionInfo* pos_info) const;
 	void PawnGen();
-	void DiagCapture();
 
 	// reverses bits in a uint64_t. 
 	// I used a simple name to keep the formula compact
@@ -62,14 +64,6 @@ public:
 	Position* const position_;
 
 	const bool white_to_move_;
-
-	//refers to the occupied squares of the parent: "position"
-	/*
-	TO DELETE
-	after adding the struct, this is unnecessary:
-	const uint64_t white_occupied_;
-	const uint64_t black_occupied_;
-	const uint64_t occupied_;*/
 
 	//refers to the PARENT bitboards
 	//note that the values pointed to should not be changed after initializing
